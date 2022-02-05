@@ -18,7 +18,7 @@ package cmd
 import (
 	"fmt"
 
-	"github.com/kohrVid/pg-cli/helpers"
+	"github.com/kohrVid/pg-cli/db"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -41,15 +41,15 @@ var dropCmd = &cobra.Command{
 		dropRole := fmt.Sprintf("DROP ROLE %v", databaseUser)
 		dropDB := fmt.Sprintf("DROP DATABASE %v;", databaseName)
 
-		db := helpers.PostgresDB()
-		defer db.Close()
+		conn := db.PgConnect()
+		defer conn.Close()
 
-		_, err = db.Exec(dropDB)
+		_, err = conn.Exec(dropDB)
 		if err != nil {
 			fmt.Println(err)
 		}
 
-		_, err = db.Exec(dropRole)
+		_, err = conn.Exec(dropRole)
 		if err != nil {
 			fmt.Println(err)
 		}

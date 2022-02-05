@@ -19,7 +19,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/kohrVid/pg-cli/helpers"
+	"github.com/kohrVid/pg-cli/db"
 	_ "github.com/lib/pq"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -52,18 +52,18 @@ var createCmd = &cobra.Command{
 			databaseUser,
 		)
 
-		db := helpers.PostgresDB()
-		defer db.Close()
+		conn := db.PgConnect()
+		defer conn.Close()
 
-		_, err = db.Exec(createRole)
+		_, err = conn.Exec(createRole)
 		if err != nil {
 			fmt.Println(err)
 		}
-		_, err = db.Exec(alterRole)
+		_, err = conn.Exec(alterRole)
 		if err != nil {
 			log.Fatal(err)
 		}
-		_, err = db.Exec(createDB)
+		_, err = conn.Exec(createDB)
 		if err != nil {
 			fmt.Println(err)
 		}

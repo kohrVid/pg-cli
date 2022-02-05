@@ -2,19 +2,31 @@ package db
 
 import (
 	"crypto/tls"
+	"database/sql"
 	"os"
 
 	"github.com/go-pg/pg"
+	_ "github.com/lib/pq"
 )
 
 func DBConnect(config map[string]interface{}) *pg.DB {
-	db := pg.Connect(&pg.Options{
+	conn := pg.Connect(&pg.Options{
 		Database:  config["database_name"].(string),
 		User:      config["database_user"].(string),
 		TLSConfig: sslMode(),
 	})
 
-	return db
+	return conn
+}
+
+func PgConnect() *sql.DB {
+	conn, err := sql.Open("postgres", "host=localhost port=5432 user=postgres dbname=postgres sslmode=disable")
+
+	if err != nil {
+		panic(err)
+	}
+
+	return conn
 }
 
 func sslMode() *tls.Config {
