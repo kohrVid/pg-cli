@@ -55,6 +55,7 @@ func init() {
 	)
 
 	rootCmd.MarkFlagRequired("config")
+	rootCmd.CompletionOptions.DisableDefaultCmd = true
 
 	createCmd.Flags().StringVarP(&env, "env", "e", "development", "environment name")
 	cleanCmd.Flags().StringVarP(&env, "env", "e", "development", "environment name")
