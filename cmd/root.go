@@ -27,12 +27,13 @@ import (
 
 var cfgFile string
 var env string
+var migrationPath string
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Use:   "pg-cli",
 	Short: "Database Operations",
-	Long:  `This tool can be used to run shell scripts needed to create and manage the database`,
+	Long:  `This tool can be used to create and manage a postgres database`,
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
