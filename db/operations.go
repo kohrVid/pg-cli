@@ -24,7 +24,7 @@ func Create(conf map[string]interface{}) error {
 		databaseUser,
 	)
 
-	conn := PgConnect(conf)
+	conn := PGUserDBConn(conf)
 
 	_, err := conn.Exec(createRole)
 	if err != nil {
@@ -52,7 +52,7 @@ func Drop(conf map[string]interface{}) error {
 	dropRole := fmt.Sprintf("DROP ROLE %v", databaseUser)
 	dropDB := fmt.Sprintf("DROP DATABASE %v;", databaseName)
 
-	conn := PgConnect(conf)
+	conn := PGUserDBConn(conf)
 	defer conn.Close()
 
 	_, err := conn.Exec(dropDB)
@@ -99,7 +99,7 @@ $$ LANGUAGE plpgsql;
 		databaseUser,
 	)
 
-	conn := DBConnect(conf)
+	conn := DBConn(conf)
 	defer conn.Close()
 
 	_, err := conn.Exec(cleanDB)
@@ -117,7 +117,7 @@ func Seed(conf map[string]interface{}) error {
 		log.Fatal("No data to seed")
 	}
 
-	conn := DBConnect(conf)
+	conn := DBConn(conf)
 	defer conn.Close()
 
 	_, err := conn.Exec(seedDB)

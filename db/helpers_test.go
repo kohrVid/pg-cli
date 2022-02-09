@@ -53,7 +53,7 @@ test:
 }
 
 func migrationHelper(conf map[string]interface{}) {
-	conn := DBConnect(conf)
+	conn := DBConn(conf)
 	defer conn.Close()
 
 	_, err := conn.Exec(`CREATE TABLE cats (

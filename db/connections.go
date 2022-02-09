@@ -7,7 +7,7 @@ import (
 	_ "github.com/lib/pq"
 )
 
-func DBConnect(conf map[string]interface{}) *sql.DB {
+func DBConn(conf map[string]interface{}) *sql.DB {
 	dsn := fmt.Sprintf(
 		"postgres://%v:@%v:%v/%v?sslmode=%v",
 		conf["database_user"].(string),
@@ -25,7 +25,7 @@ func DBConnect(conf map[string]interface{}) *sql.DB {
 	return dbConn
 }
 
-func PgConnect(conf map[string]interface{}) *sql.DB {
+func PGUserDBConn(conf map[string]interface{}) *sql.DB {
 	dsn := fmt.Sprintf(
 		"postgres://%v:@%v:%v/%v?sslmode=%v",
 		"postgres",
