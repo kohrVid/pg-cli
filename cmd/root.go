@@ -50,7 +50,7 @@ func init() {
 	rootCmd.PersistentFlags().StringVarP(
 		&cfgFile, "config",
 		"c", "",
-		"config file (default is $GOPATH/src/github.com/example/config/env.yaml)",
+		"config file (default is $GOPATH/src/github.com/kohrVid/pg-cli/example/env.yaml)",
 	)
 
 	rootCmd.MarkFlagRequired("config")
@@ -70,8 +70,7 @@ func initConfig() {
 	} else {
 		examplePath := filepath.Join(
 			os.Getenv("GOPATH"), "src",
-			"github.com", "example",
-			"config",
+			"github.com", "kohrVid", "pg-cli", "example",
 		)
 
 		viper.AddConfigPath(examplePath)
