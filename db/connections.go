@@ -3,14 +3,16 @@ package db
 import (
 	"database/sql"
 	"fmt"
+	"os"
 
 	_ "github.com/lib/pq"
 )
 
 func DBConn(conf map[string]interface{}) *sql.DB {
 	dsn := fmt.Sprintf(
-		"postgres://%v:@%v:%v/%v?sslmode=%v",
+		"postgres://%v:%v@%v:%v/%v?sslmode=%v",
 		conf["database_user"].(string),
+		os.Getenv("DATABASE_PASSWORD"),
 		host(conf),
 		port(conf),
 		conf["database_name"].(string),
@@ -27,8 +29,9 @@ func DBConn(conf map[string]interface{}) *sql.DB {
 
 func PGUserDBConn(conf map[string]interface{}) *sql.DB {
 	dsn := fmt.Sprintf(
-		"postgres://%v:@%v:%v/%v?sslmode=%v",
+		"postgres://%v:%v@%v:%v/%v?sslmode=%v",
 		"postgres",
+		os.Getenv("DATABASE_PASSWORD"),
 		host(conf),
 		port(conf),
 		"postgres",

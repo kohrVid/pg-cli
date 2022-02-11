@@ -64,6 +64,13 @@ Note, because the CLI depends on
 [viper](https://github.com/spf13/viper/issues/260) to parse YAML files, the
 keys used in the configuration file are **NOT** case sensitive.
 
+If your database requires a password, you can connect to it by assigning it to
+an environment variable called `$DATABASE_PASSWORD` in your shell. Please note,
+that database passwords should NOT be added to the configuration YAML as the
+pg-cli will only look for the aforementioned environment variable. As this is
+variable isn't parsed by the viper package, its name is **case sensitive** and
+must be typed in all caps.
+
 
 ## Installation
 
