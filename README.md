@@ -40,6 +40,11 @@ for improvement then great!
 * Go v1.17+
 * PostgreSQL
 
+Optional for development:
+
+* [gocov](https://github.com/axw/gocov#installation) (`go install github.com/axw/gocov/gocov@v1.0.0`)
+
+
 ### Configuration
 
 This package is somewhat prescriptive in that your app must contain a YAML file
@@ -152,3 +157,7 @@ To run just the tests for the `db` package:
 
     go test -v -count=1 ./db
 
+To check coverage, you're advised to install gocov as per the [prerequisites
+section](#prerequisites). To check the application's test coverage, run:
+
+    gocov test ./... | gocov report
