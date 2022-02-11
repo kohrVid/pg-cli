@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/golang-migrate/migrate/v4"
+	"github.com/golang-migrate/migrate/v4/database"
 	"github.com/golang-migrate/migrate/v4/database/postgres"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
 	_ "github.com/lib/pq"
@@ -30,26 +31,15 @@ func MigrateStep(conf map[string]interface{}, migrationPath string, step int) {
 
 func MigrationVersion(conf map[string]interface{}, migrationPath string) {
 	databaseName := conf["database_name"].(string)
-
 	dbConn := DBConn(conf)
 	driver, err := postgres.WithInstance(dbConn, &postgres.Config{})
 	if err != nil {
 		panic(err)
 	}
 
-	m, err := migrate.NewWithDatabaseInstance(
-		fmt.Sprintf("%v", uri.File(migrationPath)),
-		"postgres", driver)
+	v, dirty := version(driver, migrationPath)
 
-	version, dirty, err := m.Version()
-
-	if err == migrate.ErrNilVersion {
-		version = 0
-	} else if err != nil {
-		panic(err)
-	}
-
-	fmt.Printf("%v database is currently migrated to version %v. ", databaseName, version)
+	fmt.Printf("%v database is currently migrated to version %v. ", databaseName, v)
 	if dirty == true {
 		fmt.Printf("The database is dirty.\n")
 	} else {
@@ -91,4 +81,20 @@ func MigrateDown(conf map[string]interface{}, migrationPath string) {
 	m.Down()
 
 	fmt.Printf("%v database schema rolled back\n", databaseName)
+}
+
+func version(driver database.Driver, migrationPath string) (uint, bool) {
+	m, err := migrate.NewWithDatabaseInstance(
+		fmt.Sprintf("%v", uri.File(migrationPath)),
+		"postgres", driver)
+
+	version, dirty, err := m.Version()
+
+	if err == migrate.ErrNilVersion {
+		version = 0
+	} else if err != nil {
+		panic(err)
+	}
+
+	return version, dirty
 }
