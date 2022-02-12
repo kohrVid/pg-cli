@@ -35,26 +35,11 @@ var dropCmd = &cobra.Command{
 		}
 
 		conf := viper.Get(env).(map[string]interface{})
-		databaseUser := conf["database_user"].(string)
-		databaseName := conf["database_name"].(string)
 
-		dropRole := fmt.Sprintf("DROP ROLE %v", databaseUser)
-		dropDB := fmt.Sprintf("DROP DATABASE %v;", databaseName)
-
-		conn := db.PgConnect()
-		defer conn.Close()
-
-		_, err = conn.Exec(dropDB)
+		err = db.Drop(conf)
 		if err != nil {
-			fmt.Println(err)
+			panic(fmt.Errorf("Fatal error dropping database: %s \n", err))
 		}
-
-		_, err = conn.Exec(dropRole)
-		if err != nil {
-			fmt.Println(err)
-		}
-
-		fmt.Printf("%v database deleted\n", databaseName)
 	},
 }
 

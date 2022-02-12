@@ -18,7 +18,7 @@ package cmd
 import (
 	"fmt"
 
-	"github.com/kohrVid/pg-cli/helpers"
+	"github.com/kohrVid/pg-cli/db"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -35,7 +35,11 @@ var seedCmd = &cobra.Command{
 		}
 
 		conf := viper.Get(env).(map[string]interface{})
-		helpers.Seed(conf)
+
+		err = db.Seed(conf)
+		if err != nil {
+			panic(fmt.Errorf("Fatal error seeding database: %s \n", err))
+		}
 
 		fmt.Printf(
 			"Seeded %v database\n",

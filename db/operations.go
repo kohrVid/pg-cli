@@ -1,16 +1,76 @@
-package helpers
+package db
 
 import (
 	"fmt"
 	"log"
 	"reflect"
 	"strings"
-
-	"github.com/fatih/structs"
-	"github.com/kohrVid/pg-cli/db"
 )
 
-func Clean(conf map[string]interface{}) {
+func Create(conf map[string]interface{}) error {
+	databaseUser := conf["database_user"].(string)
+	databaseName := conf["database_name"].(string)
+
+	createRole := fmt.Sprintf("CREATE ROLE %v", databaseUser)
+
+	alterRole := fmt.Sprintf(
+		"ALTER ROLE %v WITH SUPERUSER LOGIN CREATEDB;",
+		databaseUser,
+	)
+
+	createDB := fmt.Sprintf(
+		"CREATE DATABASE %v WITH OWNER %v ENCODING 'UTF8';",
+		databaseName,
+		databaseUser,
+	)
+
+	conn := PgConnect()
+	defer conn.Close()
+
+	_, err := conn.Exec(createRole)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	_, err = conn.Exec(alterRole)
+	if err != nil {
+		return err
+	}
+
+	_, err = conn.Exec(createDB)
+	if err != nil {
+		return err
+	}
+
+	fmt.Printf("%v database created\n", databaseName)
+	return nil
+}
+
+func Drop(conf map[string]interface{}) error {
+	databaseUser := conf["database_user"].(string)
+	databaseName := conf["database_name"].(string)
+
+	dropRole := fmt.Sprintf("DROP ROLE %v", databaseUser)
+	dropDB := fmt.Sprintf("DROP DATABASE %v;", databaseName)
+
+	conn := PgConnect()
+	defer conn.Close()
+
+	_, err := conn.Exec(dropDB)
+	if err != nil {
+		return err
+	}
+
+	_, err = conn.Exec(dropRole)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	fmt.Printf("%v database deleted\n", databaseName)
+	return nil
+}
+
+func Clean(conf map[string]interface{}) error {
 	databaseUser := conf["database_user"].(string)
 
 	truncateTables := fmt.Sprintf(`
@@ -33,49 +93,48 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 		`)
+
 	cleanDB := fmt.Sprintf(
 		"%v SELECT truncate_tables('%v');",
 		truncateTables,
 		databaseUser,
 	)
 
-	db := db.DBConnect(conf)
-	defer db.Close()
+	conn := DBConnect(conf)
+	defer conn.Close()
 
-	_, err := db.Exec(cleanDB)
+	_, err := conn.Exec(cleanDB)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
+
+	return nil
 }
 
-func Seed(conf map[string]interface{}) {
-	seedDB := InsertConfSql(conf)
+func Seed(conf map[string]interface{}) error {
+	seedDB := insertConfSql(conf)
 
 	if len(seedDB) < 1 {
 		log.Fatal("No data to seed")
 	}
 
-	db := db.DBConnect(conf)
-	defer db.Close()
+	conn := DBConnect(conf)
+	defer conn.Close()
 
-	_, err := db.Exec(seedDB)
+	_, err := conn.Exec(seedDB)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 
-	_, err = db.Exec(
-		`INSERT INTO candidate_time_slots
-		  (candidate_id, time_slot_id) VALUES(1, 1);
-		INSERT INTO interviewer_time_slots
-		  (interviewer_id, time_slot_id) VALUES(1, 2)`,
-	)
-
+	_, err = conn.Exec(seedDB)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
+
+	return nil
 }
 
-func InsertConfSql(conf map[string]interface{}) string {
+func insertConfSql(conf map[string]interface{}) string {
 	var sql string
 	d := conf["data"]
 
@@ -131,46 +190,6 @@ func mixedSqlSlice(vals []interface{}) string {
 				"%v, ",
 				val,
 			)
-		}
-	}
-
-	return sql[:len(sql)-2]
-}
-
-func SetSqlColumns(model *structs.Struct, params *structs.Struct) string {
-	sql := "SET "
-	for _, k := range model.Names() {
-		if !params.Field(k).IsZero() {
-			col := model.Field(k)
-
-			sql += fmt.Sprintf(
-				"%v = ",
-				model.Field(k).Tag("json"),
-			)
-
-			switch col.Kind().String() {
-			case "string":
-				sql += fmt.Sprintf(
-					"'%v', ",
-					params.Field(k).Value(),
-				)
-
-			default:
-				sql += fmt.Sprintf(
-					"%v, ",
-					params.Field(k).Value(),
-				)
-			}
-
-			/*
-			  This function exists because go-pg doesn't
-			  support the structs library. If it did, the string
-			  manipulation could be replaced with the line below.
-			  Currently this line is required to ensure that the
-			  controller returns the correct JSON object but isn't
-			  used in the ORM command.
-			*/
-			col.Set(params.Field(k).Value())
 		}
 	}
 

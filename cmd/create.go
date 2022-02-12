@@ -17,7 +17,6 @@ package cmd
 
 import (
 	"fmt"
-	"log"
 
 	"github.com/kohrVid/pg-cli/db"
 	_ "github.com/lib/pq"
@@ -37,38 +36,11 @@ var createCmd = &cobra.Command{
 		}
 
 		conf := viper.Get(env).(map[string]interface{})
-		databaseUser := conf["database_user"].(string)
-		databaseName := conf["database_name"].(string)
 
-		createRole := fmt.Sprintf("CREATE ROLE %v", databaseUser)
-		alterRole := fmt.Sprintf(
-			"ALTER ROLE %v WITH SUPERUSER LOGIN CREATEDB;",
-			databaseUser,
-		)
-
-		createDB := fmt.Sprintf(
-			"CREATE DATABASE %v WITH OWNER %v ENCODING 'UTF8';",
-			databaseName,
-			databaseUser,
-		)
-
-		conn := db.PgConnect()
-		defer conn.Close()
-
-		_, err = conn.Exec(createRole)
+		err = db.Create(conf)
 		if err != nil {
-			fmt.Println(err)
+			panic(fmt.Errorf("Fatal error creating database: %s \n", err))
 		}
-		_, err = conn.Exec(alterRole)
-		if err != nil {
-			log.Fatal(err)
-		}
-		_, err = conn.Exec(createDB)
-		if err != nil {
-			fmt.Println(err)
-		}
-
-		fmt.Printf("%v database created\n", databaseName)
 	},
 }
 

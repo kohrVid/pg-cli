@@ -1,384 +1,328 @@
-package helpers
+package db
 
 import (
 	"fmt"
-	"log"
 	"strconv"
 	"testing"
 
-	"github.com/fatih/structs"
-	//"github.com/kohrVid/calendar-api/app/models"
-
 	"github.com/stretchr/testify/assert"
-	"gopkg.in/yaml.v2"
 )
 
-type Cat struct {
-	Id     int    `json:"id"`
-	Name   string `json:"name"`
-	Age    int    `json:"age"`
-	Colour string `json:"colour"`
+func TestCreate(t *testing.T) {
+	conf := testInit(confYaml)
+	Drop(conf)
+	err := Create(conf)
+
+	if err != nil {
+		t.Fatal(err)
+	}
 }
 
-var cat Cat = Cat{
-	Id:     1,
-	Name:   "QT",
-	Age:    2,
-	Colour: "Tabby and white",
+func TestDrop(t *testing.T) {
+	conf := testInit(confYaml)
+	err := Drop(conf)
+
+	if err != nil {
+		t.Fatal(err)
+	}
 }
 
-func init() {
-	conf := "test" // config.LoadConfig()
-	Clean(conf)
-	Seed(conf)
+func TestSeed(t *testing.T) {
+	conf := testInit(confYaml)
+	Create(conf)
+	migrationHelper(conf)
+	err := Seed(conf)
+
+	if err != nil {
+		t.Fatal(err)
+	}
 }
 
-//func TestTruncation(t *testing.T) {
-//conf := config.LoadConfig()
-//db := db.DBConnect(conf)
-//defer db.Close()
+func TestClean(t *testing.T) {
+	conf := testInit(confYaml)
+	err := Clean(conf)
 
-//candidate := models.Candidate{}
-//_, err := db.Query(&candidate, "SELECT * FROM candidates ORDER BY id LIMIT 1")
-
-//if err != nil {
-//log.Println(err)
-//}
-
-//timeSlot := models.TimeSlot{}
-//_, err = db.Query(&timeSlot, "SELECT * FROM time_slots ORDER BY id LIMIT 1")
-
-//if err != nil {
-//log.Println(err)
-//}
-
-//assert.Equal(t, 1, candidate.Id, "expected to restart identity column")
-//assert.Equal(t, 1, timeSlot.Id, "expected to restart identity column")
-//}
+	if err != nil {
+		t.Fatal(err)
+	}
+}
 
 func TestInsertConfSql(t *testing.T) {
-	var conf map[string]interface{}
-
-	dat := fmt.Sprintf(`
-database_name: calendar_api_test
-data:
-  cats:
-    - name: %v
-      age: %v
-      colour: %v`,
-		cat.Name,
-		cat.Age,
-		cat.Colour,
-	)
-
-	if err := yaml.Unmarshal([]byte(dat), &conf); err != nil {
-		log.Println(err)
-	}
-
+	conf := testInit(confYaml)
 	assert.Regexp(
 		t,
 		`INSERT INTO cats \(.*\) VALUES\(.*\);`,
-		InsertConfSql(conf),
+		insertConfSql(conf),
 		"Should return the correct SQL query based on the configuration given",
 		"formatted",
 	)
 
 	assert.Contains(
 		t,
-		InsertConfSql(conf),
+		insertConfSql(conf),
 		"name",
 		"Should return an SQL query with the correct columns based on the configuration given",
 	)
 
 	assert.Contains(
 		t,
-		InsertConfSql(conf),
+		insertConfSql(conf),
 		"age",
 		"Should return an SQL query with the correct columns based on the configuration given",
 	)
 
 	assert.Contains(
 		t,
-		InsertConfSql(conf),
+		insertConfSql(conf),
 		"colour",
 		"Should return an SQL query with the correct columns based on the configuration given",
 	)
 
 	assert.Contains(
 		t,
-		InsertConfSql(conf),
-		cat.Name,
+		insertConfSql(conf),
+		cat1.Name,
 		"Should return an SQL query with the correct values based on the configuration given",
 	)
 
 	assert.Contains(
 		t,
-		InsertConfSql(conf),
-		strconv.Itoa(cat.Age),
+		insertConfSql(conf),
+		strconv.Itoa(cat1.Age),
 		"Should return an SQL query with the correct values based on the configuration given",
 	)
 
 	assert.Contains(
 		t,
-		InsertConfSql(conf),
-		cat.Colour,
+		insertConfSql(conf),
+		cat1.Colour,
 		"Should return an SQL query with the correct values based on the configuration given",
 	)
 }
 
 func TestInsertConfSqlWithMultipleRows(t *testing.T) {
-	var conf map[string]interface{}
+	confYaml2 := []byte(
+		fmt.Sprintf(`
+test:
+  database_name: pgcli_test
+  database_user: pgcli_user
+  data:
+    cats:
+      - name: %v
+        age: %v
+        colour: %v
+      - name: Q-ee
+        age: 3
+        colour: Grey`,
+			cat1.Name,
+			cat1.Age,
+			cat1.Colour,
+		))
 
-	dat := fmt.Sprintf(`
-database_name: calendar_api_test
-data:
-  cats:
-    - name: %v
-      age: %v
-      colour: %v
-    - name: Q-ee
-      age: 3
-      colour: Grey`,
-		cat.Name,
-		cat.Age,
-		cat.Colour,
-	)
-
-	if err := yaml.Unmarshal([]byte(dat), &conf); err != nil {
-		log.Fatal(err)
-	}
+	conf := testInit(confYaml2)
 
 	assert.Regexp(
 		t,
 		`INSERT INTO cats \(.*\) VALUES\(.*\);`,
-		InsertConfSql(conf),
+		insertConfSql(conf),
 		"Should return the correct SQL query based on the configuration given",
 		"formatted",
 	)
 
 	assert.Contains(
 		t,
-		InsertConfSql(conf),
+		insertConfSql(conf),
 		"name",
 		"Should return an SQL query with the correct columns based on the configuration given",
 	)
 
 	assert.Contains(
 		t,
-		InsertConfSql(conf),
+		insertConfSql(conf),
 		"age",
 		"Should return an SQL query with the correct columns based on the configuration given",
 	)
 
 	assert.Contains(
 		t,
-		InsertConfSql(conf),
+		insertConfSql(conf),
 		"colour",
 		"Should return an SQL query with the correct columns based on the configuration given",
 	)
 
 	assert.Contains(
 		t,
-		InsertConfSql(conf),
-		cat.Name,
+		insertConfSql(conf),
+		cat1.Name,
 		"Should return an SQL query with the correct values based on the configuration given",
 	)
 
 	assert.Contains(
 		t,
-		InsertConfSql(conf),
-		strconv.Itoa(cat.Age),
+		insertConfSql(conf),
+		strconv.Itoa(cat1.Age),
 		"Should return an SQL query with the correct values based on the configuration given",
 	)
 
 	assert.Contains(
 		t,
-		InsertConfSql(conf),
-		cat.Colour,
+		insertConfSql(conf),
+		cat1.Colour,
 		"Should return an SQL query with the correct values based on the configuration given",
 	)
 
 	assert.Contains(
 		t,
-		InsertConfSql(conf),
+		insertConfSql(conf),
 		"Q-ee",
 		"Should return an SQL query with the correct values based on the configuration given",
 	)
 
 	assert.Contains(
 		t,
-		InsertConfSql(conf),
+		insertConfSql(conf),
 		"3",
 		"Should return an SQL query with the correct values based on the configuration given",
 	)
 
 	assert.Contains(
 		t,
-		InsertConfSql(conf),
+		insertConfSql(conf),
 		"Grey",
 		"Should return an SQL query with the correct values based on the configuration given",
 	)
 }
 
 func TestInsertConfSqlWithMultipleTables(t *testing.T) {
-	conf := make(map[string]interface{})
+	confYaml2 := []byte(
+		fmt.Sprintf(`
+test:
+  database_name: pgcli_test
+  database_user: pgcli_user
+  data:
+    cats:
+      - name: %v
+        age: %v
+        colour: %v
+    birds:
+      - name: Maggie
+        colour: Black and white`,
+			cat1.Name,
+			cat1.Age,
+			cat1.Colour,
+		))
 
-	dat := fmt.Sprintf(`
-database_name: calendar_api_test
-data:
-  cats:
-    - name: %v
-      age: %v
-      colour: %v
-  birds:
-    - name: Maggie
-      colour: Black and white`,
-		cat.Name,
-		cat.Age,
-		cat.Colour,
-	)
-
-	if err := yaml.Unmarshal([]byte(dat), &conf); err != nil {
-		log.Fatal(err)
-	}
+	conf := testInit(confYaml2)
 
 	assert.Regexp(
 		t,
 		`INSERT INTO cats \(.*\) VALUES\(.*\);`,
-		InsertConfSql(conf),
+		insertConfSql(conf),
 		"Should return the correct SQL query based on the configuration given",
 		"formatted",
 	)
 
 	assert.Contains(
 		t,
-		InsertConfSql(conf),
+		insertConfSql(conf),
 		"name",
 		"Should return an SQL query with the correct columns based on the configuration given",
 	)
 
 	assert.Contains(
 		t,
-		InsertConfSql(conf),
+		insertConfSql(conf),
 		"age",
 		"Should return an SQL query with the correct columns based on the configuration given",
 	)
 
 	assert.Contains(
 		t,
-		InsertConfSql(conf),
+		insertConfSql(conf),
 		"colour",
 		"Should return an SQL query with the correct columns based on the configuration given",
 	)
 
 	assert.Contains(
 		t,
-		InsertConfSql(conf),
-		cat.Name,
+		insertConfSql(conf),
+		cat1.Name,
 		"Should return an SQL query with the correct values based on the configuration given",
 	)
 
 	assert.Contains(
 		t,
-		InsertConfSql(conf),
-		strconv.Itoa(cat.Age),
+		insertConfSql(conf),
+		strconv.Itoa(cat1.Age),
 		"Should return an SQL query with the correct values based on the configuration given",
 	)
 
 	assert.Contains(
 		t,
-		InsertConfSql(conf),
-		cat.Colour,
+		insertConfSql(conf),
+		cat1.Colour,
 		"Should return an SQL query with the correct values based on the configuration given",
 	)
 
 	assert.Regexp(
 		t,
 		`INSERT INTO birds \(.*\) VALUES\(.*\);`,
-		InsertConfSql(conf),
+		insertConfSql(conf),
 		"Should return the correct SQL query based on the configuration given",
 		"formatted",
 	)
 
 	assert.Contains(
 		t,
-		InsertConfSql(conf),
+		insertConfSql(conf),
 		"Maggie",
 		"Should return an SQL query with the correct values based on the configuration given",
 	)
 
 	assert.Contains(
 		t,
-		InsertConfSql(conf),
+		insertConfSql(conf),
 		"Black and white",
 		"Should return an SQL query with the correct values based on the configuration given",
 	)
 }
 
 func TestInsertConfSqlWithNoTables(t *testing.T) {
-	conf := make(map[string]interface{})
+	confYaml2 := []byte(
+		fmt.Sprintf(`
+test:
+  database_name: pgcli_test
+  database_user: pgcli_user
+  data:`,
+		))
 
-	dat := `
-database_name: calendar_api_test
-data:`
-
-	if err := yaml.Unmarshal([]byte(dat), &conf); err != nil {
-		log.Fatal(err)
-	}
+	conf := testInit(confYaml2)
 
 	assert.Equal(
 		t,
 		"",
-		InsertConfSql(conf),
+		insertConfSql(conf),
 		"Should return the correct SQL query based on the configuration given",
 	)
 }
 
-func TestSetSqlColumns(t *testing.T) {
-	params := Cat{
-		Name: "Q-ee",
-	}
+func TestInsertConfSqlWithNoData(t *testing.T) {
+	confYaml2 := []byte(
+		fmt.Sprintf(`
+default: &default
+  database_user: pgcli_user
+  host: localhost
+  port: 5432
+test:
+  <<: *default
+  database_name: pgcli_test`))
 
-	c := structs.New(&cat)
-	p := structs.New(&params)
-
-	assert.Equal(
-		t,
-		"SET name = 'Q-ee'",
-		SetSqlColumns(c, p),
-		"Should return the correct SQL query if a single column is changed",
-	)
-}
-
-func TestSetSqlColumnsWithMultipleColumns(t *testing.T) {
-	params := Cat{
-		Name:   "Q-ee",
-		Colour: "blue",
-	}
-
-	c := structs.New(&cat)
-	p := structs.New(&params)
+	conf := testInit(confYaml2)
 
 	assert.Equal(
 		t,
-		"SET name = 'Q-ee', colour = 'blue'",
-		SetSqlColumns(c, p),
-		"Should return the correct SQL query if multiple columns are changed",
-	)
-}
-
-func TestSetSqlColumnsWithNonStrings(t *testing.T) {
-	params := Cat{
-		Id: 3,
-	}
-
-	c := structs.New(&cat)
-	p := structs.New(&params)
-
-	assert.Equal(
-		t,
-		"SET id = 3",
-		SetSqlColumns(c, p),
-		"Should return the correct SQL query if multiple columns are changed",
+		"",
+		insertConfSql(conf),
+		"Should return the correct SQL query based on the configuration given",
 	)
 }
