@@ -25,7 +25,6 @@ func Create(conf map[string]interface{}) error {
 	)
 
 	conn := PgConnect()
-	defer conn.Close()
 
 	_, err := conn.Exec(createRole)
 	if err != nil {

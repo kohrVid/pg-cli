@@ -103,9 +103,7 @@ func TestInsertConfSql(t *testing.T) {
 func TestInsertConfSqlWithMultipleRows(t *testing.T) {
 	confYaml2 := []byte(
 		fmt.Sprintf(`
-test:
-  database_name: pgcli_test
-  database_user: pgcli_user
+%v
   data:
     cats:
       - name: %v
@@ -114,6 +112,7 @@ test:
       - name: Q-ee
         age: 3
         colour: Grey`,
+			sharedTestConfig(),
 			cat1.Name,
 			cat1.Age,
 			cat1.Colour,
@@ -196,9 +195,7 @@ test:
 func TestInsertConfSqlWithMultipleTables(t *testing.T) {
 	confYaml2 := []byte(
 		fmt.Sprintf(`
-test:
-  database_name: pgcli_test
-  database_user: pgcli_user
+%v
   data:
     cats:
       - name: %v
@@ -207,6 +204,7 @@ test:
     birds:
       - name: Maggie
         colour: Black and white`,
+			sharedTestConfig(),
 			cat1.Name,
 			cat1.Age,
 			cat1.Colour,
@@ -290,10 +288,9 @@ test:
 func TestInsertConfSqlWithNoTables(t *testing.T) {
 	confYaml2 := []byte(
 		fmt.Sprintf(`
-test:
-  database_name: pgcli_test
-  database_user: pgcli_user
+%v
   data:`,
+			sharedTestConfig(),
 		))
 
 	conf := testInit(confYaml2)

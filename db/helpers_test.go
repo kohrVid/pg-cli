@@ -23,16 +23,13 @@ var cat1 Cat = Cat{
 
 var confYaml []byte = []byte(
 	fmt.Sprintf(`
-default: &default
-  database_user: pgcli_user
-test:
-  <<: *default
-  database_name: pgcli_test
+%v
   data:
     cats:
       - name: %v
         age: %v
         colour: %v`,
+		sharedTestConfig(),
 		cat1.Name,
 		cat1.Age,
 		cat1.Colour,
@@ -42,6 +39,17 @@ func testInit(confYaml []byte) map[string]interface{} {
 	viper.SetConfigType("yaml")
 	viper.ReadConfig(bytes.NewBuffer(confYaml))
 	return viper.Get("test").(map[string]interface{})
+}
+
+func sharedTestConfig() string {
+	return `
+default: &default
+  database_user: pgcli_user
+  host: localhost
+  port: 5432
+test:
+  <<: *default
+  database_name: pgcli_test`
 }
 
 func migrationHelper(conf map[string]interface{}) {
