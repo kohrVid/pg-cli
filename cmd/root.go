@@ -27,7 +27,6 @@ import (
 
 var cfgFile string
 var env string
-var migrationPath string
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
@@ -55,12 +54,12 @@ func init() {
 	)
 
 	rootCmd.MarkFlagRequired("config")
-	rootCmd.CompletionOptions.DisableDefaultCmd = true
 
-	createCmd.Flags().StringVarP(&env, "env", "e", "development", "environment name")
-	cleanCmd.Flags().StringVarP(&env, "env", "e", "development", "environment name")
-	dropCmd.Flags().StringVarP(&env, "env", "e", "development", "environment name")
-	seedCmd.Flags().StringVarP(&env, "env", "e", "development", "environment name")
+	rootCmd.PersistentFlags().StringVarP(
+		&env, "env", "e", "development", "environment name",
+	)
+
+	rootCmd.CompletionOptions.DisableDefaultCmd = true
 }
 
 // initConfig reads in config file and ENV variables if set.

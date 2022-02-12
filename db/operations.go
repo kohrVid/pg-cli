@@ -81,7 +81,7 @@ DECLARE
       FROM pg_tables
       WHERE tableowner = username
 	AND schemaname = 'public'
-	AND tablename != 'gopg_migrations';
+	AND tablename != 'schema_migrations';
 
 BEGIN
   FOR stmt IN statements LOOP

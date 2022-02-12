@@ -4,10 +4,12 @@ go 1.17
 
 require (
 	github.com/gertd/go-pluralize v0.1.7
+	github.com/golang-migrate/migrate/v4 v4.15.1
 	github.com/lib/pq v1.10.4
 	github.com/spf13/cobra v1.2.1
 	github.com/spf13/viper v1.9.0
 	github.com/stretchr/testify v1.7.0
+	go.lsp.dev/uri v0.3.0
 )
 
 require (
@@ -15,7 +17,6 @@ require (
 	github.com/fatih/structs v1.1.0 // indirect
 	github.com/fsnotify/fsnotify v1.5.1 // indirect
 	github.com/go-pg/pg v8.0.7+incompatible // indirect
-	github.com/golang-migrate/migrate/v4 v4.15.1 // indirect
 	github.com/google/go-github/v35 v35.2.0 // indirect
 	github.com/google/go-querystring v1.0.0 // indirect
 	github.com/hashicorp/errwrap v1.0.0 // indirect
