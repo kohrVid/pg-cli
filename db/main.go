@@ -4,12 +4,10 @@ import (
 	"database/sql"
 	"fmt"
 
-	"github.com/uptrace/bun"
-	"github.com/uptrace/bun/dialect/pgdialect"
-	"github.com/uptrace/bun/driver/pgdriver"
+	_ "github.com/lib/pq"
 )
 
-func DBConnect(conf map[string]interface{}) *bun.DB {
+func DBConnect(conf map[string]interface{}) *sql.DB {
 	dsn := fmt.Sprintf(
 		"postgres://%v:@%v:%v/%v?sslmode=%v",
 		conf["database_user"].(string),
@@ -19,12 +17,15 @@ func DBConnect(conf map[string]interface{}) *bun.DB {
 		sslMode(conf),
 	)
 
-	sqldb := sql.OpenDB(pgdriver.NewConnector(pgdriver.WithDSN(dsn)))
+	dbConn, err := sql.Open("postgres", dsn)
+	if err != nil {
+		panic(err)
+	}
 
-	return bun.NewDB(sqldb, pgdialect.New())
+	return dbConn
 }
 
-func PgConnect(conf map[string]interface{}) *bun.DB {
+func PgConnect(conf map[string]interface{}) *sql.DB {
 	dsn := fmt.Sprintf(
 		"postgres://%v:@%v:%v/%v?sslmode=%v",
 		"postgres",
@@ -34,9 +35,12 @@ func PgConnect(conf map[string]interface{}) *bun.DB {
 		sslMode(conf),
 	)
 
-	sqldb := sql.OpenDB(pgdriver.NewConnector(pgdriver.WithDSN(dsn)))
+	dbConn, err := sql.Open("postgres", dsn)
+	if err != nil {
+		panic(err)
+	}
 
-	return bun.NewDB(sqldb, pgdialect.New())
+	return dbConn
 }
 
 func host(conf map[string]interface{}) string {

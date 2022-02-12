@@ -8,9 +8,6 @@ require (
 	github.com/spf13/cobra v1.2.1
 	github.com/spf13/viper v1.9.0
 	github.com/stretchr/testify v1.7.0
-	github.com/uptrace/bun v1.0.22
-	github.com/uptrace/bun/dialect/pgdialect v1.0.22
-	github.com/uptrace/bun/driver/pgdriver v1.0.22
 )
 
 require (
@@ -18,6 +15,7 @@ require (
 	github.com/fatih/structs v1.1.0 // indirect
 	github.com/fsnotify/fsnotify v1.5.1 // indirect
 	github.com/go-pg/pg v8.0.7+incompatible // indirect
+	github.com/golang-migrate/migrate/v4 v4.15.1 // indirect
 	github.com/google/go-github/v35 v35.2.0 // indirect
 	github.com/google/go-querystring v1.0.0 // indirect
 	github.com/hashicorp/errwrap v1.0.0 // indirect
