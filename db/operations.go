@@ -24,7 +24,7 @@ func Create(conf map[string]interface{}) error {
 		databaseUser,
 	)
 
-	conn := PgConnect()
+	conn := PgConnect(conf)
 
 	_, err := conn.Exec(createRole)
 	if err != nil {
@@ -52,7 +52,7 @@ func Drop(conf map[string]interface{}) error {
 	dropRole := fmt.Sprintf("DROP ROLE %v", databaseUser)
 	dropDB := fmt.Sprintf("DROP DATABASE %v;", databaseName)
 
-	conn := PgConnect()
+	conn := PgConnect(conf)
 	defer conn.Close()
 
 	_, err := conn.Exec(dropDB)
@@ -121,11 +121,6 @@ func Seed(conf map[string]interface{}) error {
 	defer conn.Close()
 
 	_, err := conn.Exec(seedDB)
-	if err != nil {
-		return err
-	}
-
-	_, err = conn.Exec(seedDB)
 	if err != nil {
 		return err
 	}

@@ -4,18 +4,20 @@ go 1.17
 
 require (
 	github.com/gertd/go-pluralize v0.1.7
-	github.com/go-pg/pg v8.0.7+incompatible
 	github.com/lib/pq v1.10.4
 	github.com/spf13/cobra v1.2.1
 	github.com/spf13/viper v1.9.0
 	github.com/stretchr/testify v1.7.0
+	github.com/uptrace/bun v1.0.22
+	github.com/uptrace/bun/dialect/pgdialect v1.0.22
+	github.com/uptrace/bun/driver/pgdriver v1.0.22
 )
 
 require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/fatih/structs v1.1.0 // indirect
 	github.com/fsnotify/fsnotify v1.5.1 // indirect
-	github.com/golang-migrate/migrate/v4 v4.15.1 // indirect
+	github.com/go-pg/pg v8.0.7+incompatible // indirect
 	github.com/google/go-github/v35 v35.2.0 // indirect
 	github.com/google/go-querystring v1.0.0 // indirect
 	github.com/hashicorp/errwrap v1.0.0 // indirect
@@ -35,9 +37,6 @@ require (
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/subosito/gotenv v1.2.0 // indirect
 	github.com/tmthrgd/go-hex v0.0.0-20190904060850-447a3041c3bc // indirect
-	github.com/uptrace/bun v1.0.22 // indirect
-	github.com/uptrace/bun/dialect/pgdialect v1.0.22 // indirect
-	github.com/uptrace/bun/driver/pgdriver v1.0.22 // indirect
 	github.com/vmihailenco/msgpack/v5 v5.3.5 // indirect
 	github.com/vmihailenco/tagparser/v2 v2.0.0 // indirect
 	go.uber.org/atomic v1.7.0 // indirect

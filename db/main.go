@@ -1,41 +1,71 @@
 package db
 
 import (
-	"crypto/tls"
 	"database/sql"
-	"os"
+	"fmt"
 
-	"github.com/go-pg/pg"
-	_ "github.com/lib/pq"
+	"github.com/uptrace/bun"
+	"github.com/uptrace/bun/dialect/pgdialect"
+	"github.com/uptrace/bun/driver/pgdriver"
 )
 
-func DBConnect(config map[string]interface{}) *pg.DB {
-	conn := pg.Connect(&pg.Options{
-		Database:  config["database_name"].(string),
-		User:      config["database_user"].(string),
-		TLSConfig: sslMode(),
-	})
+func DBConnect(conf map[string]interface{}) *bun.DB {
+	dsn := fmt.Sprintf(
+		"postgres://%v:@%v:%v/%v?sslmode=%v",
+		conf["database_user"].(string),
+		host(conf),
+		port(conf),
+		conf["database_name"].(string),
+		sslMode(conf),
+	)
 
-	return conn
+	sqldb := sql.OpenDB(pgdriver.NewConnector(pgdriver.WithDSN(dsn)))
+
+	return bun.NewDB(sqldb, pgdialect.New())
 }
 
-func PgConnect() *sql.DB {
-	conn, err := sql.Open("postgres", "host=localhost port=5432 user=postgres dbname=postgres sslmode=disable")
+func PgConnect(conf map[string]interface{}) *bun.DB {
+	dsn := fmt.Sprintf(
+		"postgres://%v:@%v:%v/%v?sslmode=%v",
+		"postgres",
+		host(conf),
+		port(conf),
+		"postgres",
+		sslMode(conf),
+	)
 
-	if err != nil {
-		panic(err)
-	}
+	sqldb := sql.OpenDB(pgdriver.NewConnector(pgdriver.WithDSN(dsn)))
 
-	return conn
+	return bun.NewDB(sqldb, pgdialect.New())
 }
 
-func sslMode() *tls.Config {
-	switch os.Getenv("SSL_MODE") {
-	case "verify-ca", "verify-full":
-		return &tls.Config{}
-	case "allow", "prefer", "require":
-		return &tls.Config{InsecureSkipVerify: true}
-	default:
-		return nil
+func host(conf map[string]interface{}) string {
+	if conf["host"] != nil {
+		return conf["host"].(string)
 	}
+
+	return "localhost"
+}
+
+func port(conf map[string]interface{}) int {
+	if conf["port"] != nil {
+		return conf["port"].(int)
+	}
+
+	return 5432
+}
+
+func sslMode(conf map[string]interface{}) string {
+	if conf["ssl_mode"] != nil {
+		mode := conf["string"].(string)
+
+		switch mode {
+		case "verify-full", "verify-ca", "require", "prefer", "allow", "disable":
+			return mode
+		default:
+			return "disable"
+		}
+	}
+
+	return "disable"
 }
