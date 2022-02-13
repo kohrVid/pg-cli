@@ -61,7 +61,7 @@ func port(conf map[string]interface{}) int {
 
 func sslMode(conf map[string]interface{}) string {
 	if conf["ssl_mode"] != nil {
-		mode := conf["string"].(string)
+		mode := conf["ssl_mode"].(string)
 
 		switch mode {
 		case "verify-full", "verify-ca", "require", "prefer", "allow", "disable":
