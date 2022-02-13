@@ -10,7 +10,7 @@ import (
 
 func TestCreate(t *testing.T) {
 	conf := testInit(confYaml)
-	Drop(conf)
+	forceDBDrop(conf)
 	err := Create(conf)
 
 	if err != nil {
@@ -20,6 +20,7 @@ func TestCreate(t *testing.T) {
 
 func TestDrop(t *testing.T) {
 	conf := testInit(confYaml)
+	Create(conf)
 	err := Drop(conf)
 
 	if err != nil {
@@ -36,15 +37,23 @@ func TestSeed(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+
+	forceDBDrop(conf)
 }
 
 func TestClean(t *testing.T) {
 	conf := testInit(confYaml)
+	Create(conf)
+	migrationHelper(conf)
+	Seed(conf)
+
 	err := Clean(conf)
 
 	if err != nil {
 		t.Fatal(err)
 	}
+
+	forceDBDrop(conf)
 }
 
 func TestInsertConfSql(t *testing.T) {

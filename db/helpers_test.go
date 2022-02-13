@@ -66,3 +66,28 @@ func migrationHelper(conf map[string]interface{}) {
 		panic(err)
 	}
 }
+
+func forceDBDrop(conf map[string]interface{}) {
+	databaseName := conf["database_name"]
+	dbConn := PGUserDBConn(conf)
+	defer dbConn.Close()
+
+	/* Terminate all other sessions in the database */
+	_, err := dbConn.Exec(
+		fmt.Sprintf(`
+SELECT pg_terminate_backend(pg_stat_activity.pid)
+FROM pg_stat_activity
+WHERE pg_stat_activity.datname = '%v'
+  AND pid <> pg_backend_pid();`,
+			databaseName),
+	)
+	if err != nil {
+		panic(err)
+	}
+
+	dropDB := fmt.Sprintf("DROP DATABASE IF EXISTS %v;", databaseName)
+	_, err = dbConn.Exec(dropDB)
+	if err != nil {
+		panic(err)
+	}
+}
