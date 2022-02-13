@@ -39,6 +39,9 @@ var migrateVersionCmd = &cobra.Command{
 
 		fmt.Println("Using migrations in:", migrationPath)
 		conf := viper.Get(env).(map[string]interface{})
-		db.MigrationVersion(conf, migrationPath)
+		err = db.MigrationVersion(conf, migrationPath)
+		if err != nil {
+			panic(fmt.Errorf("Fatal error migrating database: %s \n", err))
+		}
 	},
 }

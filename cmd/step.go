@@ -39,6 +39,9 @@ var stepCmd = &cobra.Command{
 
 		fmt.Println("Using migrations in:", migrationPath)
 		conf := viper.Get(env).(map[string]interface{})
-		db.MigrateStep(conf, migrationPath, step)
+		err = db.MigrateStep(conf, migrationPath, step)
+		if err != nil {
+			panic(fmt.Errorf("Fatal error migrating database: %s \n", err))
+		}
 	},
 }

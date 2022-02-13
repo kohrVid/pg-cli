@@ -11,33 +11,19 @@ import (
 	"go.lsp.dev/uri"
 )
 
-func MigrateStep(conf map[string]interface{}, migrationPath string, step int) {
+func MigrationVersion(conf map[string]interface{}, migrationPath string) error {
 	databaseName := conf["database_name"].(string)
 
 	dbConn := DBConn(conf)
 	driver, err := postgres.WithInstance(dbConn, &postgres.Config{})
 	if err != nil {
-		panic(err)
+		return err
 	}
 
-	m, err := migrate.NewWithDatabaseInstance(
-		fmt.Sprintf("%v", uri.File(migrationPath)),
-		"postgres", driver)
-
-	m.Steps(step)
-
-	fmt.Printf("%v database migrated to step %v\n", databaseName, step)
-}
-
-func MigrationVersion(conf map[string]interface{}, migrationPath string) {
-	databaseName := conf["database_name"].(string)
-	dbConn := DBConn(conf)
-	driver, err := postgres.WithInstance(dbConn, &postgres.Config{})
+	v, dirty, err := version(driver, migrationPath)
 	if err != nil {
-		panic(err)
+		return err
 	}
-
-	v, dirty := version(driver, migrationPath)
 
 	fmt.Printf("%v database is currently migrated to version %v. ", databaseName, v)
 	if dirty == true {
@@ -45,45 +31,77 @@ func MigrationVersion(conf map[string]interface{}, migrationPath string) {
 	} else {
 		fmt.Printf("The database is clean.\n")
 	}
+
+	return nil
 }
 
-func MigrateUp(conf map[string]interface{}, migrationPath string) {
+func MigrateStep(conf map[string]interface{}, migrationPath string, step int) error {
 	databaseName := conf["database_name"].(string)
 
 	dbConn := DBConn(conf)
 	driver, err := postgres.WithInstance(dbConn, &postgres.Config{})
 	if err != nil {
-		panic(err)
+		return err
 	}
 
 	m, err := migrate.NewWithDatabaseInstance(
 		fmt.Sprintf("%v", uri.File(migrationPath)),
 		"postgres", driver)
+	if err != nil {
+		return err
+	}
+
+	m.Steps(step)
+	fmt.Printf("%v database migrated to step %v\n", databaseName, step)
+
+	return nil
+}
+
+func MigrateUp(conf map[string]interface{}, migrationPath string) error {
+	databaseName := conf["database_name"].(string)
+
+	dbConn := DBConn(conf)
+	driver, err := postgres.WithInstance(dbConn, &postgres.Config{})
+	if err != nil {
+		return err
+	}
+
+	m, err := migrate.NewWithDatabaseInstance(
+		fmt.Sprintf("%v", uri.File(migrationPath)),
+		"postgres", driver)
+	if err != nil {
+		return err
+	}
 
 	m.Up()
-
 	fmt.Printf("%v database migrated\n", databaseName)
+
+	return nil
 }
 
-func MigrateDown(conf map[string]interface{}, migrationPath string) {
+func MigrateDown(conf map[string]interface{}, migrationPath string) error {
 	databaseName := conf["database_name"].(string)
 
 	dbConn := DBConn(conf)
 	driver, err := postgres.WithInstance(dbConn, &postgres.Config{})
 	if err != nil {
-		panic(err)
+		return err
 	}
 
 	m, err := migrate.NewWithDatabaseInstance(
 		fmt.Sprintf("%v", uri.File(migrationPath)),
 		"postgres", driver)
+	if err != nil {
+		return err
+	}
 
 	m.Down()
-
 	fmt.Printf("%v database schema rolled back\n", databaseName)
+
+	return nil
 }
 
-func version(driver database.Driver, migrationPath string) (uint, bool) {
+func version(driver database.Driver, migrationPath string) (uint, bool, error) {
 	m, err := migrate.NewWithDatabaseInstance(
 		fmt.Sprintf("%v", uri.File(migrationPath)),
 		"postgres", driver)
@@ -92,9 +110,7 @@ func version(driver database.Driver, migrationPath string) (uint, bool) {
 
 	if err == migrate.ErrNilVersion {
 		version = 0
-	} else if err != nil {
-		panic(err)
 	}
 
-	return version, dirty
+	return version, dirty, err
 }

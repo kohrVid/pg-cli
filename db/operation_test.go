@@ -31,7 +31,7 @@ func TestDrop(t *testing.T) {
 func TestSeed(t *testing.T) {
 	conf := testInit(confYaml)
 	Create(conf)
-	migrationHelper(conf)
+	MigrateUp(conf, "../example/migrations")
 	err := Seed(conf)
 
 	if err != nil {
@@ -44,7 +44,7 @@ func TestSeed(t *testing.T) {
 func TestClean(t *testing.T) {
 	conf := testInit(confYaml)
 	Create(conf)
-	migrationHelper(conf)
+	MigrateUp(conf, "../example/migrations")
 	Seed(conf)
 
 	err := Clean(conf)
