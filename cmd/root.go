@@ -32,7 +32,7 @@ var env string
 var rootCmd = &cobra.Command{
 	Use:   "pg-cli",
 	Short: "Database Operations",
-	Long:  `This tool can be used to run shell scripts needed to create and manage the database`,
+	Long:  `This tool can be used to create and manage a postgres database`,
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
@@ -50,15 +50,16 @@ func init() {
 	rootCmd.PersistentFlags().StringVarP(
 		&cfgFile, "config",
 		"c", "",
-		"config file (default is $GOPATH/src/github.com/example/config/env.yaml)",
+		"config file (default is $GOPATH/src/github.com/kohrVid/pg-cli/example/env.yaml)",
 	)
 
 	rootCmd.MarkFlagRequired("config")
 
-	createCmd.Flags().StringVarP(&env, "env", "e", "development", "environment name")
-	cleanCmd.Flags().StringVarP(&env, "env", "e", "development", "environment name")
-	dropCmd.Flags().StringVarP(&env, "env", "e", "development", "environment name")
-	seedCmd.Flags().StringVarP(&env, "env", "e", "development", "environment name")
+	rootCmd.PersistentFlags().StringVarP(
+		&env, "env", "e", "development", "environment name",
+	)
+
+	rootCmd.CompletionOptions.DisableDefaultCmd = true
 }
 
 // initConfig reads in config file and ENV variables if set.
@@ -69,8 +70,7 @@ func initConfig() {
 	} else {
 		examplePath := filepath.Join(
 			os.Getenv("GOPATH"), "src",
-			"github.com", "example",
-			"config",
+			"github.com", "kohrVid", "pg-cli", "example",
 		)
 
 		viper.AddConfigPath(examplePath)

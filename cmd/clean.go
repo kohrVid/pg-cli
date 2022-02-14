@@ -18,7 +18,7 @@ package cmd
 import (
 	"fmt"
 
-	"github.com/kohrVid/pg-cli/helpers"
+	"github.com/kohrVid/pg-cli/db"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -36,7 +36,11 @@ var cleanCmd = &cobra.Command{
 
 		conf := viper.Get(env).(map[string]interface{})
 		databaseName := conf["database_name"].(string)
-		helpers.Clean(conf)
+
+		err = db.Clean(conf)
+		if err != nil {
+			panic(fmt.Errorf("Fatal error cleaning database: %s \n", err))
+		}
 
 		fmt.Printf("%v database cleaned\n", databaseName)
 	},
