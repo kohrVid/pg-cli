@@ -43,7 +43,7 @@ func TestMigrateUp(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	checkDBVersion(t, conf, "../example/migrations", 1)
+	checkDBVersion(t, conf, "../example/migrations", 2)
 
 	forceDBDrop(conf)
 }
