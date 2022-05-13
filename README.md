@@ -145,13 +145,11 @@ Apply all down migrations:
 
 Clone the repo:
 
-    mkdir -p $GOPATH/src/github.com/kohrVid/
-    cd $GOPATH/src/github.com/kohrVid/
     git clone https://github.com/kohrVid/pg-cli.git
+    cd pg-cli
 
-Clone dependencies:
+Install dependencies:
 
-    cd $GOPATH/src/github.com/kohrVid/pg-cli
     go mod vendor
 
 Run tests:

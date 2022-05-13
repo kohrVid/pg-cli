@@ -1,4 +1,4 @@
 vendor/*
-!vendor/.gitkeep
+!vendor/modules.txt
 pg-cli
 *.cov
