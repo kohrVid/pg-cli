@@ -24,7 +24,7 @@ jobs:
           name: Install Dependencies
           command: |
             export GO111MODULE=on
-            go mod download
+            go mod vendor
             go install github.com/axw/gocov/gocov@v1.0.0
       - save_cache:
           key: go-mod-v4-{{ checksum "go.sum" }}
