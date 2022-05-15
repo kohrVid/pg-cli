@@ -18,7 +18,8 @@ package cmd
 import (
 	"fmt"
 
-	"github.com/kohrVid/pg-cli/db"
+	"pg-cli/db"
+
 	_ "github.com/lib/pq"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"

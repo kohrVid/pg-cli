@@ -18,10 +18,11 @@ package cmd
 import (
 	"fmt"
 
+	"pg-cli/db"
+
 	_ "github.com/golang-migrate/migrate/v4/database/postgres"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
 	_ "github.com/golang-migrate/migrate/v4/source/github"
-	"github.com/kohrVid/pg-cli/db"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )

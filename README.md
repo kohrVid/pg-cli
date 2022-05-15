@@ -124,8 +124,13 @@ format:
     VERSION_migration_name.up.sql
     VERSION_migration_name.down.sql
 
+The first migration file must generate a table (as opposed to an SQL function,
+for example) with at least one field. Without this, the migration command will
+fail silently. If you would like to create an SQL function in your first
+migration an example work-around can be found
+[here](https://github.com/kohrVid/pg-cli/blob/master/example/migrations/1_initialise_schema.up.sql).
 Further details on how to write migration files can be found
-[here](https://github.com/golang-migrate/migrate/blob/master/MIGRATIONS.md).
+on the [golang-migrate github repo](https://github.com/golang-migrate/migrate/blob/master/MIGRATIONS.md).
 
 Apply all up migrations:
 
@@ -140,13 +145,11 @@ Apply all down migrations:
 
 Clone the repo:
 
-    mkdir -p $GOPATH/src/github.com/kohrVid/
-    cd $GOPATH/src/github.com/kohrVid/
     git clone https://github.com/kohrVid/pg-cli.git
+    cd pg-cli
 
-Clone dependencies:
+Install dependencies:
 
-    cd $GOPATH/src/github.com/kohrVid/pg-cli
     go mod vendor
 
 Run tests:
