@@ -15,7 +15,7 @@ limitations under the License.
 */
 package main
 
-import "pg-cli/cmd"
+import "github.com/kohrVid/pg-cli/cmd"
 
 func main() {
 	cmd.Execute()
