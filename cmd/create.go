@@ -28,7 +28,7 @@ import (
 // createCmd represents the create command
 var createCmd = &cobra.Command{
 	Use:   "create",
-	Short: "Create a new database for the calendar API",
+	Short: "Create a new postgres database",
 	Long:  `This command can be used to create a database with environment-specific settings`,
 	Run: func(cmd *cobra.Command, args []string) {
 		err := viper.ReadInConfig()
