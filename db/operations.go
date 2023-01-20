@@ -152,8 +152,8 @@ func insertConfSql(conf map[string]interface{}) string {
 			cols := []string{}
 			vals := []interface{}{}
 
-			for col, val := range row.(map[interface{}]interface{}) {
-				cols = append(cols, col.(string))
+			for col, val := range row.(map[string]interface{}) {
+				cols = append(cols, col)
 				vals = append(vals, val)
 			}
 

@@ -37,8 +37,12 @@ var confYaml []byte = []byte(
 
 func testInit(confYaml []byte) map[string]interface{} {
 	viper.SetConfigType("yaml")
-	viper.ReadConfig(bytes.NewBuffer(confYaml))
-	return viper.Get("test").(map[string]interface{})
+	err := viper.ReadConfig(bytes.NewBuffer(confYaml))
+	if err != nil {
+		panic(fmt.Errorf("Fatal error config file: %w \n", err))
+	}
+
+	return viper.GetStringMap("test")
 }
 
 func sharedTestConfig() string {
