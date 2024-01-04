@@ -47,16 +47,16 @@ func PGUserDBConn(conf map[string]interface{}) *sql.DB {
 }
 
 func host(conf map[string]interface{}) string {
-	if conf["host"] != nil {
-		return conf["host"].(string)
+	if conf["database_host"] != nil {
+		return conf["database_host"].(string)
 	}
 
 	return "localhost"
 }
 
 func port(conf map[string]interface{}) int {
-	if conf["port"] != nil {
-		return conf["port"].(int)
+	if conf["database_port"] != nil {
+		return conf["database_port"].(int)
 	}
 
 	return 5432

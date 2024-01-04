@@ -52,10 +52,10 @@ with configuration variables for each of the environments that you intend to
 support. Environment names must be specified at the top level and each must
 contain (or inherit) the following variables:
 
+* `database_host` - the host name in the database URL
+* `database_port` - port used to connect to the PostgreSQL database
 * `database_user` - username used to connect to the database
 * `database_name` - the name of the database
-* `host` - the host name in the database URL
-* `port` - port used to connect to the PostgreSQL database
 
 Optionally, an environment can also contain the following variables:
 
