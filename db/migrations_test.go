@@ -7,8 +7,9 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+var conf map[string]interface{} = testInit(confYaml)
+
 func TestMigrationVersion(t *testing.T) {
-	conf := testInit(confYaml)
 	Create(conf)
 	MigrateUp(conf, "../example/migrations")
 	err := MigrationVersion(conf, "../example/migrations")
@@ -21,7 +22,6 @@ func TestMigrationVersion(t *testing.T) {
 }
 
 func TestMigrateStep(t *testing.T) {
-	conf := testInit(confYaml)
 	Create(conf)
 	err := MigrateStep(conf, "../example/migrations", 1)
 
@@ -35,7 +35,6 @@ func TestMigrateStep(t *testing.T) {
 }
 
 func TestMigrateNegativeStep(t *testing.T) {
-	conf := testInit(confYaml)
 	Create(conf)
 	err := MigrateStep(conf, "../example/migrations", 2)
 	if err != nil {
@@ -53,7 +52,6 @@ func TestMigrateNegativeStep(t *testing.T) {
 }
 
 func TestMigrateUp(t *testing.T) {
-	conf := testInit(confYaml)
 	Create(conf)
 	err := MigrateUp(conf, "../example/migrations")
 
@@ -67,7 +65,6 @@ func TestMigrateUp(t *testing.T) {
 }
 
 func TestMigrateDown(t *testing.T) {
-	conf := testInit(confYaml)
 	Create(conf)
 	MigrateUp(conf, "../example/migrations")
 	err := MigrateDown(conf, "../example/migrations")
