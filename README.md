@@ -37,7 +37,7 @@ for improvement then great!
 
 ##  Prerequisites
 
-* Go v1.17+
+* Go v1.21+
 * PostgreSQL
 
 Optional for development:
