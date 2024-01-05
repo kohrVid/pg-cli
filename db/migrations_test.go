@@ -7,21 +7,60 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+var conf map[string]interface{} = testInit(confYaml)
+
 func TestMigrationVersion(t *testing.T) {
-	conf := testInit(confYaml)
 	Create(conf)
 	MigrateUp(conf, "../example/migrations")
-	err := MigrationVersion(conf, "../example/migrations")
 
-	if err != nil {
-		t.Fatal(err)
-	}
+	actual := CaptureOutput(func() {
+		MigrationVersion(conf, "../example/migrations")
+	})
+
+	assert.Regexp(
+		t,
+		`pgcli_test database is currently migrated to version 2. The database is clean.`,
+		actual,
+		"Should return the correct version number",
+		"formatted",
+	)
+
+	forceDBDrop(conf)
+}
+
+func TestMigrationVersionWithUnknownPath(t *testing.T) {
+	Create(conf)
+
+	assert.Error(
+		t,
+		MigrationVersion(conf, "./unknown"),
+		`no such file or directory`,
+		"Should be called with a valid migration path",
+		"formatted",
+	)
+
+	forceDBDrop(conf)
+}
+
+func TestMigrationVersionWithoutMigrations(t *testing.T) {
+	Create(conf)
+
+	actual := CaptureOutput(func() {
+		MigrationVersion(conf, "../example/migrations")
+	})
+
+	assert.Regexp(
+		t,
+		`pgcli_test database is currently migrated to version 0. The database is clean.`,
+		actual,
+		"Should return the correct version number",
+		"formatted",
+	)
 
 	forceDBDrop(conf)
 }
 
 func TestMigrateStep(t *testing.T) {
-	conf := testInit(confYaml)
 	Create(conf)
 	err := MigrateStep(conf, "../example/migrations", 1)
 
@@ -34,8 +73,24 @@ func TestMigrateStep(t *testing.T) {
 	forceDBDrop(conf)
 }
 
+func TestMigrateNegativeStep(t *testing.T) {
+	Create(conf)
+	err := MigrateStep(conf, "../example/migrations", 2)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	err = MigrateStep(conf, "../example/migrations", -1)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	checkDBVersion(t, conf, "../example/migrations", 1)
+
+	forceDBDrop(conf)
+}
+
 func TestMigrateUp(t *testing.T) {
-	conf := testInit(confYaml)
 	Create(conf)
 	err := MigrateUp(conf, "../example/migrations")
 
@@ -49,7 +104,6 @@ func TestMigrateUp(t *testing.T) {
 }
 
 func TestMigrateDown(t *testing.T) {
-	conf := testInit(confYaml)
 	Create(conf)
 	MigrateUp(conf, "../example/migrations")
 	err := MigrateDown(conf, "../example/migrations")

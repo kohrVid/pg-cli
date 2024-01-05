@@ -34,7 +34,7 @@ func init() {
 
 	migrateCmd.AddCommand(stepCmd)
 	stepCmd.Flags().StringVarP(&migrationPath, "path", "p", "./migrations", "relative path to the migration files")
-	stepCmd.Flags().IntVarP(&step, "step", "s", 0, "migration step number")
+	stepCmd.Flags().IntVarP(&step, "", "n", 0, "number of steps to migrate")
 	stepCmd.MarkFlagRequired("step")
 
 	migrateCmd.AddCommand(migrateVersionCmd)

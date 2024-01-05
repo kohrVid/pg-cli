@@ -7,7 +7,7 @@ import (
 )
 
 func TestHost(t *testing.T) {
-	conf := map[string]interface{}{"host": "kohrvid.com"}
+	conf := map[string]interface{}{"database_host": "kohrvid.com"}
 
 	assert.Equal(
 		t,
@@ -29,7 +29,7 @@ func TestMissingHost(t *testing.T) {
 }
 
 func TestPort(t *testing.T) {
-	conf := map[string]interface{}{"port": 5433}
+	conf := map[string]interface{}{"database_port": 5433}
 
 	assert.Equal(
 		t,

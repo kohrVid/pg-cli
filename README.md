@@ -1,5 +1,7 @@
 # pg-cli
 
+[![Free Palestine](https://img.shields.io/badge/Ceasefire_Now-%F0%9F%87%B5%F0%9F%87%B8%20Tech_For_Palestine-D83838?labelColor=01B861&color=D83838&link=https%3A%2F%2Ftechforpalestine.org%2Flearn-more)](https://techforpalestine.org/learn-more)
+
 This is a CLI used to manage PostgreSQL databases for web applications.
 
 <!-- vim-markdown-toc GFM -->
@@ -37,7 +39,7 @@ for improvement then great!
 
 ##  Prerequisites
 
-* Go v1.17+
+* Go v1.21+
 * PostgreSQL
 
 Optional for development:
@@ -52,10 +54,10 @@ with configuration variables for each of the environments that you intend to
 support. Environment names must be specified at the top level and each must
 contain (or inherit) the following variables:
 
+* `database_host` - the host name in the database URL
+* `database_port` - port used to connect to the PostgreSQL database
 * `database_user` - username used to connect to the database
 * `database_name` - the name of the database
-* `host` - the host name in the database URL
-* `port` - port used to connect to the PostgreSQL database
 
 Optionally, an environment can also contain the following variables:
 
@@ -139,6 +141,14 @@ Apply all up migrations:
 Apply all down migrations:
 
     pg-cli --config "./path/to/env.yaml" -e ENVIRONMENT migrate down
+
+Step through migrations:
+
+    # To go up a number of migrations, use a positive integer:
+    pg-cli --config "./path/to/env.yaml" -e ENVIRONMENT migrate step -n 1
+
+    # To go down a number of migrations, use a negative integer:
+    pg-cli --config "./path/to/env.yaml" -e ENVIRONMENT migrate step -n -1
 
 
 ## Development
