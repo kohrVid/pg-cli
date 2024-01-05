@@ -140,6 +140,14 @@ Apply all down migrations:
 
     pg-cli --config "./path/to/env.yaml" -e ENVIRONMENT migrate down
 
+Step through migrations:
+
+    # To go up a number of migrations, use a positive integer:
+    pg-cli --config "./path/to/env.yaml" -e ENVIRONMENT migrate step -n 1
+
+    # To go down a number of migrations, use a negative integer:
+    pg-cli --config "./path/to/env.yaml" -e ENVIRONMENT migrate step -n -1
+
 
 ## Development
 

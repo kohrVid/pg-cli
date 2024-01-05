@@ -52,7 +52,7 @@ func MigrateStep(conf map[string]interface{}, migrationPath string, step int) er
 	}
 
 	m.Steps(step)
-	fmt.Printf("%v database migrated to step %v\n", databaseName, step)
+	fmt.Printf("%v database migrated %v step(s)\n", databaseName, step)
 
 	return nil
 }

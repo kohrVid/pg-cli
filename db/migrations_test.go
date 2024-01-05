@@ -34,6 +34,24 @@ func TestMigrateStep(t *testing.T) {
 	forceDBDrop(conf)
 }
 
+func TestMigrateNegativeStep(t *testing.T) {
+	conf := testInit(confYaml)
+	Create(conf)
+	err := MigrateStep(conf, "../example/migrations", 2)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	err = MigrateStep(conf, "../example/migrations", -1)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	checkDBVersion(t, conf, "../example/migrations", 1)
+
+	forceDBDrop(conf)
+}
+
 func TestMigrateUp(t *testing.T) {
 	conf := testInit(confYaml)
 	Create(conf)
