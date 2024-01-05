@@ -1,5 +1,7 @@
 # pg-cli
 
+[![Free Palestine](https://img.shields.io/badge/Ceasefire_Now-%F0%9F%87%B5%F0%9F%87%B8%20Tech_For_Palestine-D83838?labelColor=01B861&color=D83838&link=https%3A%2F%2Ftechforpalestine.org%2Flearn-more)](https://techforpalestine.org/learn-more)
+
 This is a CLI used to manage PostgreSQL databases for web applications.
 
 <!-- vim-markdown-toc GFM -->
