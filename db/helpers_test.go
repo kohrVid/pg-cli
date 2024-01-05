@@ -3,6 +3,10 @@ package db
 import (
 	"bytes"
 	"fmt"
+	"io"
+	"log"
+	"os"
+	"sync"
 
 	"github.com/spf13/viper"
 )
@@ -79,4 +83,43 @@ WHERE pg_stat_activity.datname = '%v'
 	if err != nil {
 		panic(err)
 	}
+}
+
+// This method is used to test functions that print to stdout.
+func CaptureOutput(f func()) string {
+	out := make(chan string)
+	reader, writer, err := os.Pipe()
+	if err != nil {
+		panic(err)
+	}
+	stdout := os.Stdout
+	stderr := os.Stderr
+	defer func() {
+		os.Stdout = stdout
+		os.Stderr = stderr
+		log.SetOutput(os.Stderr)
+	}()
+	os.Stdout = writer
+	os.Stderr = writer
+	log.SetOutput(writer)
+	wg := new(sync.WaitGroup)
+	wg.Add(1)
+	go func() {
+		var buf bytes.Buffer
+		wg.Done()
+		_, err := io.Copy(&buf, reader)
+		if err != nil {
+			panic(err)
+		}
+
+		out <- buf.String()
+	}()
+	wg.Wait()
+	f()
+	err = writer.Close()
+	if err != nil {
+		panic(err)
+	}
+
+	return <-out
 }
