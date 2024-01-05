@@ -12,11 +12,50 @@ var conf map[string]interface{} = testInit(confYaml)
 func TestMigrationVersion(t *testing.T) {
 	Create(conf)
 	MigrateUp(conf, "../example/migrations")
-	err := MigrationVersion(conf, "../example/migrations")
 
-	if err != nil {
-		t.Fatal(err)
-	}
+	actual := CaptureOutput(func() {
+		MigrationVersion(conf, "../example/migrations")
+	})
+
+	assert.Regexp(
+		t,
+		`pgcli_test database is currently migrated to version 2. The database is clean.`,
+		actual,
+		"Should return the correct version number",
+		"formatted",
+	)
+
+	forceDBDrop(conf)
+}
+
+func TestMigrationVersionWithUnknownPath(t *testing.T) {
+	Create(conf)
+
+	assert.Error(
+		t,
+		MigrationVersion(conf, "./unknown"),
+		`no such file or directory`,
+		"Should be called with a valid migration path",
+		"formatted",
+	)
+
+	forceDBDrop(conf)
+}
+
+func TestMigrationVersionWithoutMigrations(t *testing.T) {
+	Create(conf)
+
+	actual := CaptureOutput(func() {
+		MigrationVersion(conf, "../example/migrations")
+	})
+
+	assert.Regexp(
+		t,
+		`pgcli_test database is currently migrated to version 0. The database is clean.`,
+		actual,
+		"Should return the correct version number",
+		"formatted",
+	)
 
 	forceDBDrop(conf)
 }

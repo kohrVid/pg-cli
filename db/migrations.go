@@ -102,15 +102,24 @@ func MigrateDown(conf map[string]interface{}, migrationPath string) error {
 }
 
 func version(driver database.Driver, migrationPath string) (uint, bool, error) {
+	var v uint = 0
+	var dirty bool = false
+
 	m, err := migrate.NewWithDatabaseInstance(
 		fmt.Sprintf("%v", uri.File(migrationPath)),
-		"postgres", driver)
+		"postgres",
+		driver,
+	)
 
-	version, dirty, err := m.Version()
-
-	if err == migrate.ErrNilVersion {
-		version = 0
+	if err != nil {
+		return v, dirty, err
 	}
 
-	return version, dirty, err
+	v, dirty, err = m.Version()
+
+	if err == migrate.ErrNilVersion {
+		err = nil
+	}
+
+	return v, dirty, err
 }
