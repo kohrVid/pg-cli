@@ -8,9 +8,8 @@ import (
 )
 
 func Create(conf map[string]interface{}) error {
-	databaseUser := conf["database_user"].(string)
-	databaseName := conf["database_name"].(string)
-
+	databaseUser := DBUser(conf)
+	databaseName := DBName(conf)
 	createRole := fmt.Sprintf("CREATE ROLE %v", databaseUser)
 
 	alterRole := fmt.Sprintf(
@@ -46,9 +45,8 @@ func Create(conf map[string]interface{}) error {
 }
 
 func Drop(conf map[string]interface{}) error {
-	databaseUser := conf["database_user"].(string)
-	databaseName := conf["database_name"].(string)
-
+	databaseUser := DBUser(conf)
+	databaseName := DBName(conf)
 	dropRole := fmt.Sprintf("DROP ROLE %v", databaseUser)
 	dropDB := fmt.Sprintf("DROP DATABASE %v;", databaseName)
 
@@ -70,7 +68,7 @@ func Drop(conf map[string]interface{}) error {
 }
 
 func Clean(conf map[string]interface{}) error {
-	databaseUser := conf["database_user"].(string)
+	databaseUser := DBUser(conf)
 
 	truncateTables := fmt.Sprintf(`
 CREATE OR REPLACE FUNCTION truncate_tables(username IN VARCHAR) RETURNS void AS $$

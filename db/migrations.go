@@ -12,9 +12,9 @@ import (
 )
 
 func MigrationVersion(conf map[string]interface{}, migrationPath string) error {
-	databaseName := conf["database_name"].(string)
-
+	databaseName := DBName(conf)
 	dbConn := DBConn(conf)
+
 	driver, err := postgres.WithInstance(dbConn, &postgres.Config{})
 	if err != nil {
 		return err
@@ -36,9 +36,9 @@ func MigrationVersion(conf map[string]interface{}, migrationPath string) error {
 }
 
 func MigrateStep(conf map[string]interface{}, migrationPath string, step int) error {
-	databaseName := conf["database_name"].(string)
-
+	databaseName := DBName(conf)
 	dbConn := DBConn(conf)
+
 	driver, err := postgres.WithInstance(dbConn, &postgres.Config{})
 	if err != nil {
 		return err
@@ -58,9 +58,9 @@ func MigrateStep(conf map[string]interface{}, migrationPath string, step int) er
 }
 
 func MigrateUp(conf map[string]interface{}, migrationPath string) error {
-	databaseName := conf["database_name"].(string)
-
+	databaseName := DBName(conf)
 	dbConn := DBConn(conf)
+
 	driver, err := postgres.WithInstance(dbConn, &postgres.Config{})
 	if err != nil {
 		return err
@@ -80,9 +80,9 @@ func MigrateUp(conf map[string]interface{}, migrationPath string) error {
 }
 
 func MigrateDown(conf map[string]interface{}, migrationPath string) error {
-	databaseName := conf["database_name"].(string)
-
+	databaseName := DBName(conf)
 	dbConn := DBConn(conf)
+
 	driver, err := postgres.WithInstance(dbConn, &postgres.Config{})
 	if err != nil {
 		return err

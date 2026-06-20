@@ -52,16 +52,19 @@ func testInit(confYaml []byte) map[string]interface{} {
 func sharedTestConfig() string {
 	return `
 default: &default
-  database_user: pgcli_user
-  host: localhost
-  port: 5432
+  database: &database
+    user: pgcli_user
+    host: localhost
+    port: 5432
 test:
   <<: *default
-  database_name: pgcli_test`
+  database:
+    <<: *database
+    name: pgcli_test`
 }
 
 func forceDBDrop(conf map[string]interface{}) {
-	databaseName := conf["database_name"]
+	databaseName := DBName(conf)
 	dbConn := PGUserDBConn(conf)
 	defer dbConn.Close()
 
